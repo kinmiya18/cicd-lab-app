@@ -1,0 +1,6 @@
+# GitOps repo history (commits by jenkins-ci are the pipeline's deploy requests)
+e33629a  jenkins-ci  ci: bump demo-app image tag to 1362c5d
+e775872  Pham Trung Kien  fleet: rely on the chart's own values.yaml
+24112ce  jenkins-ci  ci: bump demo-app image tag to cec42da
+11a064a  Pham Trung Kien  Use Docker Hub instead of Harbor
+543dba5  Pham Trung Kien  Initial commit: gitops

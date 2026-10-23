@@ -1,0 +1,21 @@
+# Failing build (test deliberately broken): the pipeline stops before the push
+result: FAILED
+  Declarative: Checkout SCM  SUCCESS
+  Prepare                    SUCCESS
+  Test                       FAILED
+  Docker build               FAILED
+  Image scan (Trivy)         FAILED
+  Push to Docker Hub         FAILED
+  Bump tag in GitOps repo    FAILED
+  Declarative: Post Actions  SUCCESS
+
+Docker Hub tags after the failed build (no new tag):
+"name":"1362c5d" "name":"cec42da" 
+
+GitOps latest commit (unchanged):
+e33629a  jenkins-ci  ci: bump demo-app image tag to 1362c5d
+
+Note: Jenkins' stage view marks the stages after Test as FAILED because the build aborted there.
+The proof that nothing was delivered is the two checks above: no new Docker Hub tag and no new
+GitOps commit. The only real failure is in Test:
+  java.lang.AssertionError: JSON path "$.status" expected:<DOWN> but was:<UP>
