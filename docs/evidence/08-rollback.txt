@@ -1,0 +1,9 @@
+# Rollback: git revert of the CI bump commit in the GitOps repo, Fleet redeploys the previous tag
+1aac3b8  Pham Trung Kien  rollback: revert image tag to 1362c5d
+0d15648  jenkins-ci  ci: bump demo-app image tag to 6994b3a
+e33629a  jenkins-ci  ci: bump demo-app image tag to 1362c5d
+e775872  Pham Trung Kien  fleet: rely on the chart's own values.yaml
+
+Deployed image after rollback:
+  docker.io/kienphamtrung/demo-app:1362c5d
+GET /health: {"version":"1362c5d","service":"demo-app","status":"UP"}
