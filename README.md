@@ -75,4 +75,4 @@ A 60-90 second screen recording of steps 1 to 7 on a one-line change is the stro
 
 ## Status
 
-First end-to-end run in progress (see build history in Jenkins).
+Pipeline run in progress: retrying after replacing the Docker Hub token (read-only scope).
