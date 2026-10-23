@@ -1,9 +1,9 @@
-// Declarative pipeline: GitHub webhook -> test -> image -> (scan) -> Harbor -> bump tag in GitOps repo.
+// Declarative pipeline: GitHub webhook -> test -> image -> (scan) -> Docker Hub -> bump tag in GitOps repo.
 // Fleet watches the GitOps repo and rolls the new tag out with Helm; Jenkins never talks to the cluster.
 //
 // Jenkins prerequisites: JDK 17, Docker CLI on the agent, Git, "GitHub plugin" for the webhook trigger.
 // Credentials (Manage Jenkins > Credentials):
-//   harbor-creds       : Username with password, Harbor account that can push to HARBOR_PROJECT
+//   dockerhub-creds    : Username with password; Docker Hub username + access token (Read & Write)
 //   gitops-deploy-key  : SSH private key; its public half is a write-enabled deploy key on the GitOps repo
 pipeline {
     agent any
@@ -14,8 +14,7 @@ pipeline {
     }
 
     environment {
-        HARBOR_HOST    = '127.0.0.1:5000'
-        HARBOR_PROJECT = 'demo'
+        DOCKERHUB_USER = 'kienphamtrung'
         IMAGE_NAME     = 'demo-app'
         GITOPS_REPO    = 'git@github.com:kinmiya18/cicd-lab-gitops.git'
     }
@@ -34,7 +33,7 @@ pipeline {
             steps {
                 script {
                     env.GIT_SHA = sh(returnStdout: true, script: 'git rev-parse --short=7 HEAD').trim()
-                    env.IMAGE   = "${HARBOR_HOST}/${HARBOR_PROJECT}/${IMAGE_NAME}:${env.GIT_SHA}"
+                    env.IMAGE   = "${DOCKERHUB_USER}/${IMAGE_NAME}:${env.GIT_SHA}"
                 }
                 echo "Building ${env.IMAGE}"
             }
@@ -65,15 +64,15 @@ pipeline {
             }
         }
 
-        stage('Push to Harbor') {
+        stage('Push to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'harbor-creds',
-                                                  usernameVariable: 'HARBOR_USER',
-                                                  passwordVariable: 'HARBOR_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds',
+                                                  usernameVariable: 'HUB_USER',
+                                                  passwordVariable: 'HUB_TOKEN')]) {
                     sh '''
-                        echo "$HARBOR_PASS" | docker login "$HARBOR_HOST" -u "$HARBOR_USER" --password-stdin
+                        echo "$HUB_TOKEN" | docker login -u "$HUB_USER" --password-stdin
                         docker push "$IMAGE"
-                        docker logout "$HARBOR_HOST"
+                        docker logout
                     '''
                 }
             }
