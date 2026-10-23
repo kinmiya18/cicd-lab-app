@@ -75,4 +75,4 @@ A 60-90 second screen recording of steps 1 to 7 on a one-line change is the stro
 
 ## Status
 
-Not yet run end to end. Update this section with the date and Jenkins/Fleet/Kubernetes versions once the evidence above exists.
+First end-to-end run in progress (see build history in Jenkins).
