@@ -1,0 +1,2 @@
+# GET /health on the pod deployed by Fleet (2026-10-23T18:34:59Z)
+{"service":"demo-app","status":"UP","version":"1362c5d"}
