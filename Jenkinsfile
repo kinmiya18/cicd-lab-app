@@ -59,8 +59,9 @@ pipeline {
         stage('Image scan (Trivy)') {
             when { expression { params.RUN_TRIVY } }
             steps {
-                sh '''docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest \
-                      image --exit-code 1 --severity CRITICAL --ignore-unfixed --no-progress ${IMAGE}'''
+                // The vulnerability DBs are large; keep them in a named volume so only the first scan downloads them.
+                sh '''docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v trivy-cache:/root/.cache aquasec/trivy:latest \
+                      image --scanners vuln --timeout 15m --exit-code 1 --severity CRITICAL --ignore-unfixed --no-progress ${IMAGE}'''
             }
         }
 
