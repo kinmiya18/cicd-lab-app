@@ -1,0 +1,34 @@
+# Trivy gate: before and after fixing the findings
+
+## Build 9 (Spring Boot 3.3.5): scan found fixable CRITICAL CVEs, pipeline stopped before the push
+result: FAILED
+  Declarative: Checkout SCM  SUCCESS
+  Prepare                    SUCCESS
+  Test                       SUCCESS
+  Docker build               SUCCESS
+  Image scan (Trivy)         FAILED
+  Push to Docker Hub         FAILED
+  Bump tag in GitOps repo    FAILED
+  Declarative: Post Actions  SUCCESS
++ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v trivy-cache:/root/.cache aquasec/trivy:latest image --scanners vuln --timeout 15m --exit-code 1 --severity CRITICAL --ignore-unfixed --no-progre
+2026-10-24T01:00:39Z	INFO	Detected OS	family="ubuntu" version="26.04"
+Total: 8 (CRITICAL: 8)
+│ org.apache.tomcat.embed:tomcat-embed-core (app.jar) │ CVE-2025-24813 │ CRITICAL │ fixed  │ 10.1.31           │ 11.0.3, 10.1.35, 9.0.99   │ tomcat: Potential RCE and/or information disclosure and
+│ org.springframework:spring-webmvc (app.jar)         │ CVE-2026-47884 │          │        │ 6.1.14            │ 7.0.9                     │ org.springframework/spring-webmvc: Spring Framework: Re
+
+## Build 11 (Spring Boot 4.0.9): scan clean, image pushed and deployed
+result: SUCCESS
+  Declarative: Checkout SCM  SUCCESS
+  Prepare                    SUCCESS
+  Test                       SUCCESS
+  Docker build               SUCCESS
+  Image scan (Trivy)         SUCCESS
+  Push to Docker Hub         SUCCESS
+  Bump tag in GitOps repo    SUCCESS
+  Declarative: Post Actions  SUCCESS
++ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v trivy-cache:/root/.cache aquasec/trivy:latest image --scanners vuln --timeout 15m --exit-code 1 --severity CRITICAL --ignore-unfixed --no-progre
+2026-10-24T01:06:37Z	INFO	Detected OS	family="ubuntu" version="26.04"
+
+## Deployed after build 11
+  image: docker.io/kienphamtrung/demo-app:cae80ac
+  GET /health: {"version":"cae80ac","service":"demo-app","status":"UP"}

@@ -51,12 +51,22 @@ Recorded in [`docs/evidence/`](docs/evidence) on 2026-10-23/24:
 | `06-health.txt` | `/health` returning the deployed commit SHA |
 | `07-failing-build-stops-pipeline.txt` | A deliberately broken test: build fails at Test, no new image tag, no GitOps commit |
 | `08-rollback.txt` | `git revert` in the GitOps repo and Fleet redeploying the previous tag |
+| `09-trivy-scan.txt` | Trivy gate: 8 fixable CRITICAL CVEs blocked build 9; after upgrading Spring Boot, build 11 passed the scan and was deployed |
 
 Run on: Jenkins 2.541.3, k3s v1.35.5 (k3d), Fleet chart 0.16.3, Docker Desktop on one laptop.
 
+## Security gate (Trivy)
+
+The `Image scan (Trivy)` stage scans the built image (OS packages and the Java libraries inside `app.jar`) and fails the build on any fixable CRITICAL vulnerability, before anything is pushed. It is switched on with the `RUN_TRIVY` build parameter.
+
+On its first real run it blocked the build: Tomcat 10.1.31 and spring-webmvc 6.1.14, brought in by Spring Boot 3.3.5, carried 8 fixable CRITICAL CVEs. Upgrading to Spring Boot 4.0.9 fixed them, and the next scan passed. Details in `docs/evidence/09-trivy-scan.txt`.
+
+The vulnerability databases are large, so the scan runs with a longer timeout and a persistent cache volume; the first scan downloaded them in about 7 minutes.
+
 ## Not covered yet
 
-- The optional Trivy stage (`RUN_TRIVY=true`) exists in the `Jenkinsfile` but has not been run.
+- Only dependency and image scanning is automated; there is no static code analysis (SonarQube) yet.
+- The scan runs only when `RUN_TRIVY` is enabled, not on every build.
 - Fleet detects changes by polling every 15 seconds; there is no registry-side trigger.
 - The Docker Hub repository is public, so the cluster pulls without a secret.
 
