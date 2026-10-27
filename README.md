@@ -55,6 +55,8 @@ Recorded in [`docs/evidence/`](docs/evidence) on 2026-10-23/24:
 
 Run on: Jenkins 2.541.3, k3s v1.35.5 (k3d), Fleet chart 0.16.3, Docker Desktop on one laptop.
 
+Last verified run: 2026-10-27 (screenshots and time-lapse in `docs/evidence/screenshots/`).
+
 ## Security gate (Trivy)
 
 The `Image scan (Trivy)` stage scans the built image (OS packages and the Java libraries inside `app.jar`) and fails the build on any fixable CRITICAL vulnerability, before anything is pushed. It is switched on with the `RUN_TRIVY` build parameter.
