@@ -39,6 +39,27 @@ The same short SHA appears in the Jenkins build, the Docker Hub tag, the GitOps 
 
 ## Evidence from a real run
 
+### Screenshots and time-lapse (2026-10-27)
+
+One commit pushed to this repo, then everything below happened without a manual step. The screenshots were taken by a script
+(headless Edge) while the pipeline ran; the time-lapse is those screenshots in order, with a caption bar added for the elapsed time.
+
+![Time-lapse of the pipeline run](docs/evidence/screenshots/timelapse-run.gif)
+
+| Screenshot | What it shows |
+|---|---|
+| [`01-jenkins-stage-view.png`](docs/evidence/screenshots/01-jenkins-stage-view.png) | Jenkins stage view: build #13 green, plus the earlier failed builds (a broken test, a Trivy block, a network error while pushing) |
+| [`02-jenkins-build-page.png`](docs/evidence/screenshots/02-jenkins-build-page.png) | Build #13 page |
+| [`03-dockerhub-tags.png`](docs/evidence/screenshots/03-dockerhub-tags.png) | Docker Hub: the image tag equals the commit SHA |
+| [`04-github-gitops-commits.png`](docs/evidence/screenshots/04-github-gitops-commits.png) | GitOps repo: the `ci: bump demo-app image tag` commit made by `jenkins-ci` |
+| [`05-github-app-commits.png`](docs/evidence/screenshots/05-github-app-commits.png) | App repo commit history |
+| [`06-health-endpoint.png`](docs/evidence/screenshots/06-health-endpoint.png) | `/health` returning the deployed SHA |
+| [`07-kubectl-output.png`](docs/evidence/screenshots/07-kubectl-output.png) | Fleet GitRepo ready, pod running the new image (rendered from real command output) |
+
+To check it yourself: the SHA in the Docker Hub tag, the GitOps commit message, `/health` and the app repo's latest commit is the same.
+
+### Text records
+
 Recorded in [`docs/evidence/`](docs/evidence) on 2026-10-23/24:
 
 | File | What it shows |
