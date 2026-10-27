@@ -86,13 +86,6 @@ On its first real run it blocked the build: Tomcat 10.1.31 and spring-webmvc 6.1
 
 The vulnerability databases are large, so the scan runs with a longer timeout and a persistent cache volume; the first scan downloaded them in about 7 minutes.
 
-## Not covered yet
-
-- Only dependency and image scanning is automated; there is no static code analysis (SonarQube) yet.
-- The scan runs only when `RUN_TRIVY` is enabled, not on every build.
-- Fleet detects changes by polling every 15 seconds; there is no registry-side trigger.
-- The Docker Hub repository is public, so the cluster pulls without a secret.
-
 ## Run it
 
 Prerequisites: a Jenkins with JDK 17, Docker and Git on the agent; a Docker Hub repository; a cluster running Fleet.
