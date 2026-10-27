@@ -85,24 +85,3 @@ The `Image scan (Trivy)` stage scans the built image (OS packages and the Java l
 On its first real run it blocked the build: Tomcat 10.1.31 and spring-webmvc 6.1.14, brought in by Spring Boot 3.3.5, carried 8 fixable CRITICAL CVEs. Upgrading to Spring Boot 4.0.9 fixed them, and the next scan passed. Details in `docs/evidence/09-trivy-scan.txt`.
 
 The vulnerability databases are large, so the scan runs with a longer timeout and a persistent cache volume; the first scan downloaded them in about 7 minutes.
-
-## Run it
-
-Prerequisites: a Jenkins with JDK 17, Docker and Git on the agent; a Docker Hub repository; a cluster running Fleet.
-
-1. **Edit placeholders** in the `Jenkinsfile` (`DOCKERHUB_USER`, `GITOPS_REPO`) and in the GitOps repo (`values.yaml`, `fleet/gitrepo.yaml`).
-2. **Jenkins credentials:**
-   - `dockerhub-creds`: Username with password; Docker Hub username and an access token with Read & Write scope.
-   - `gitops-deploy-key`: SSH private key whose public half is added to the GitOps repo as a deploy key with write access.
-3. **Jenkins job:** Pipeline from SCM pointing at this repo; the `githubPush()` trigger is declared in the job.
-4. **GitHub webhook:** payload URL `https://<jenkins-host>/github-webhook/`, event *push*. If Jenkins is not publicly reachable, relay through smee.io (`smee --url <channel> --target "http://localhost:8080/github-webhook/?src=smee"`; the query string stops smee-client from stripping the trailing slash, which would turn the POST into a 405).
-5. **Cluster, once:** `kubectl apply -f fleet/gitrepo.yaml` (from the GitOps repo).
-6. Push a change and watch it roll out.
-
-Optional DevSecOps stage: run the job with `RUN_TRIVY=true`; it scans the image with the `aquasec/trivy` container and fails on fixable CRITICAL vulnerabilities.
-
-## Lessons from the first run
-
-- A Docker Hub token with read-only scope logs in successfully but fails the push with `insufficient scopes`.
-- Re-delivering a webhook for a commit that was already built does not start a build; Jenkins sees no changes.
-- Listing `valuesFiles` in `fleet.yaml` made Fleet render the chart without its default `service` values; relying on the chart's own `values.yaml` fixed it.
